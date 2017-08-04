@@ -1,0 +1,12 @@
+{
+  "name": "mqtt-wrapper",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Polymer Element that wraps other Elements and links them to MQTT topics",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hobbyquaker/mqtt-wrapper.git"
+  },
+  "author": "Sebastian Raff <hq@ccu.io>",
+  "license": "MIT"
+ }

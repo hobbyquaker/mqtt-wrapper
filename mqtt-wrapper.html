@@ -1,0 +1,96 @@
+<script>
+    class MqttWrapper extends Polymer.Element {
+        static get properties() {
+            return {
+                sub: {
+                    type: Object
+                },
+                pub: {
+                    type: Object
+                }
+            }
+        }
+
+        throttle(callback, limit) {
+            let wait = false;
+            return () => {
+                if (!wait) {
+                    callback.call();
+                    wait = true;
+                    setTimeout(() => {
+                        wait = false;
+                    }, limit);
+                }
+            }
+        }
+
+        connectedCallback() {
+            super.connectedCallback();
+
+            const mqtt = document.querySelector('mqtt-connection');
+
+            if (!mqtt) {
+                throw new Error('mqtt-connection not found');
+            }
+
+            const child = this.querySelector('*:first-child');
+
+            if (child) {
+                if (typeof this.sub === 'object') {
+                    Object.keys(this.sub).forEach(topic => {
+                        const conf = this.sub[topic];
+                        if (typeof conf !== 'object') {
+                            return;
+                        }
+                        mqtt.subscribe(topic, payload => {
+                            if (typeof conf.disable !== 'undefined') {
+                                if (child[conf.disable]) {
+                                    return;
+                                }
+                            }
+                            if (typeof conf.json !== 'undefined' && payload.indexOf('{') !== -1) {
+                                try {
+                                    payload = JSON.parse(payload)[conf.json];
+                                } catch (err) {
+                                    console.error('json parse failed');
+                                }
+                            }
+                            if (conf.negate) {
+                                payload = !payload;
+                            }
+
+                            if (typeof conf.attribute !== 'undefined') {
+                                if (conf.type === 'boolean' && !payload) {
+                                    child.removeAttribute(conf.attribute);
+                                } else {
+                                    child.setAttribute(conf.attribute, payload);
+                                }
+                            } else if (conf.content === 'html') {
+                                child.innerHTML = payload;
+                            } else if (conf.content === 'text') {
+                                child.textContent = payload;
+                            }
+                        });
+                    });
+                }
+
+                if (typeof this.pub === 'object') {
+                    Object.keys(this.pub).forEach(event => {
+                        child.addEventListener(event, this.throttle(() => {
+                            const conf = this.pub[event];
+
+                            if (typeof conf.payload !== 'undefined') {
+                                mqtt.publish(conf.topic, conf.payload);
+                            } else if (typeof conf.attribute !== 'undefined') {
+                                mqtt.publish(conf.topic, child[conf.attribute]);
+                            }
+
+                        }, 125));
+                    });
+                }
+            }
+        }
+    }
+
+    customElements.define('mqtt-wrapper', MqttWrapper);
+</script>
