@@ -1,6 +1,6 @@
 # mqtt-wrapper
 
-[![Published on webcomponents.org](https://img.shields.io/badge/webcomponents.org-published-blue.svg)](https://www.webcomponents.org/element/hobbyquaker/mqtt-connection)
+[![Published on webcomponents.org](https://img.shields.io/badge/webcomponents.org-published-blue.svg)](https://www.webcomponents.org/element/hobbyquaker/mqtt-wrapper)
 
 Polymer Element that wraps other Elements and links them to MQTT topics.
 
