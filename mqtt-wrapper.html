@@ -2,7 +2,6 @@
 <!--
 Polymer Element that wraps other Elements and links them to MQTT topics. Needs a `mqtt-connection` element.
 
-
 ## Installation
 
 `bower install hobbyquaker/mqtt-wrapper`
@@ -40,8 +39,6 @@ Send the payload `1` the MQTT topic `test/button` when the wrapped paper-button 
 Wrapping a paper-toggle-button and linking it to [hue2mqtt.js](https://github.com/hobbyquaker/hue2mqtt.js)
 topics to switch a Hue lamp on and off:
 ```html
-<mqtt-connection host="microserver" port="8080"></mqtt-connection>
-
 <mqtt-wrapper
         sub='[{"topic":"hue/status/lights/Hobbyraum/on","attribute":"checked","json":"val","type":"boolean"}]'
         pub='[{"event":"change","topic":"hue/set/lights/Hobbyraum/on","attribute":"checked"}]'>
@@ -51,7 +48,6 @@ topics to switch a Hue lamp on and off:
 </mqtt-wrapper>
 ```
 
-@element mqtt-wrapper
 -->
 <dom-module id="mqtt-wrapper">
     <script>
@@ -62,6 +58,7 @@ topics to switch a Hue lamp on and off:
          *
          * @customElement
          * @polymer
+         * @element mqtt-wrapper
          */
         class MqttWrapper extends Polymer.Element {
             static get is() { return 'mqtt-wrapper'; }
@@ -94,7 +91,8 @@ topics to switch a Hue lamp on and off:
                      * @type {Array<SubscriptionConfig>}
                      */
                     sub: {
-                        type: Array
+                        type: Array,
+                        observer: '__subChange'
                     },
 
                     /**
@@ -113,7 +111,8 @@ topics to switch a Hue lamp on and off:
                      * @type {Array<PublishConfig>}
                      */
                     pub: {
-                        type: Array
+                        type: Array,
+                        observer: '__pubChange'
                     },
 
                     /**
@@ -121,43 +120,68 @@ topics to switch a Hue lamp on and off:
                      */
                     noDisable: {
                         type: Boolean,
-                        value: false
+                        value: false,
+                        observer: '__noDisableChange'
                     }
                 }
             }
 
             connectedCallback() {
+                this.__mqtt = document.querySelector('mqtt-connection');
+                this.__child = this.querySelector('*:first-child');
+                this.__eventHandlers = [];
+                this.__subscriptions = [];
+
                 super.connectedCallback();
+            }
 
-                const mqtt = document.querySelector('mqtt-connection');
-
-                if (!mqtt) {
-                    throw new Error('mqtt-connection not found');
-                }
-
-                const child = this.querySelector('*:first-child');
-
-                if (!child) {
-                    return;
-                }
-
-                console.log(this)
-
+            __noDisableChange() {
                 if (!this.noDisable) {
-                    mqtt.addEventListener('connected-changed', (event) => {
+                    this.__connectedChangeHandler = event => {
                         if (event.detail.value) {
-                            child.removeAttribute('disabled')
+                            this.__child.removeAttribute('disabled')
                         } else {
-                            child.setAttribute('disabled', true);
+                            this.__child.setAttribute('disabled', true);
                         }
+                    }
+                    this.__mqtt.addEventListener('connected-changed', this.__connectedChangeHandler);
+                } else {
+                    if (this.__connectedChangeHandler) {
+                        this.__mqtt.removeEventListener('connected-change', this.__connectedChangeHandler);
+                    }
+                }
+            }
+
+            __pubChange() {
+                this.__eventHandlers.forEach(eh => {
+                    this.__child.removeEventListener(eh.event, eh.handler);
+                });
+                this.__eventHandlers = [];
+                if (this.pub && this.pub.length > 0) {
+                    this.pub.forEach(conf => {
+                        const handler = () => {
+                            if (typeof conf.payload !== 'undefined') {
+                                this.__mqtt.publish(conf.topic, conf.payload);
+                            } else if (typeof conf.attribute !== 'undefined') {
+                                this.__mqtt.publish(conf.topic, this.__child[conf.attribute]);
+                            }
+                        };
+                        this.__eventHandlers.push({event: conf.event, handler});
+                        this.__child.addEventListener(conf.event, handler);
                     });
                 }
+            }
 
+            __subChange() {
+                this.__subscriptions.forEach(sid => {
+                    this.__mqtt.unsubscribe(sid);
+                });
+                this.__subscriptions = [];
                 if (this.sub && this.sub.length > 0) {
                     this.sub.forEach(conf => {
-                        mqtt.subscribe(conf.topic, payload => {
+                        this.__subscriptions.push(this.__mqtt.subscribe(conf.topic, payload => {
                             if (typeof conf.disable !== 'undefined') {
-                                if (child[conf.disable]) {
+                                if (this.__child[conf.disable]) {
                                     return;
                                 }
                             }
@@ -174,30 +198,16 @@ topics to switch a Hue lamp on and off:
 
                             if (typeof conf.attribute !== 'undefined') {
                                 if (conf.type === 'boolean' && !payload) {
-                                    child.removeAttribute(conf.attribute);
+                                    this.__child.removeAttribute(conf.attribute);
                                 } else {
-                                    child.setAttribute(conf.attribute, payload);
+                                    this.__child.setAttribute(conf.attribute, payload);
                                 }
                             } else if (conf.content === 'html') {
-                                child.innerHTML = payload;
+                                this.__child.innerHTML = payload;
                             } else if (conf.content === 'text') {
-                                child.textContent = payload;
+                                this.__child.textContent = payload;
                             }
-                        });
-                    });
-                }
-
-                if (this.pub && this.pub.length > 0) {
-                    this.pub.forEach(conf => {
-                        child.addEventListener(conf.event, () => {
-
-                            if (typeof conf.payload !== 'undefined') {
-                                mqtt.publish(conf.topic, conf.payload);
-                            } else if (typeof conf.attribute !== 'undefined') {
-                                mqtt.publish(conf.topic, child[conf.attribute]);
-                            }
-
-                        });
+                        }));
                     });
                 }
             }
