@@ -44,8 +44,6 @@ Send the payload `1` the MQTT topic `test/button` when the wrapped paper-button 
 Wrapping a paper-toggle-button and linking it to [hue2mqtt.js](https://github.com/hobbyquaker/hue2mqtt.js) 
 topics to switch a Hue lamp on and off:
 ```html
-<mqtt-connection host="microserver" port="8080"></mqtt-connection>
-
 <mqtt-wrapper
         sub='[{"topic":"hue/status/lights/Hobbyraum/on","attribute":"checked","json":"val","type":"boolean"}]'
         pub='[{"event":"change","topic":"hue/set/lights/Hobbyraum/on","attribute":"checked"}]'>
