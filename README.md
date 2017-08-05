@@ -10,7 +10,13 @@ Polymer Element that wraps other Elements and links them to MQTT topics.
 
 ## Usage
 
-Example wrapping a paper-toggle-button and linking it to [hue2mqtt.js](https://github.com/hobbyquaker/hue2mqtt.js) 
+### Attributes
+
+
+
+### Examples
+
+Wrapping a paper-toggle-button and linking it to [hue2mqtt.js](https://github.com/hobbyquaker/hue2mqtt.js) 
 topics:
 ```html
 <script src="bower_components/webcomponentsjs/webcomponents-lite.js"></script>
@@ -28,6 +34,13 @@ topics:
         
     <paper-toggle-button></paper-toggle-button>
     
+</mqtt-wrapper>
+```
+
+Inserts a topics value as innerHTML to the wrapped element:
+```html
+<mqtt-wrapper sub='{"var/status/Infobox":{"content":"html"}}'>
+    <div></div>
 </mqtt-wrapper>
 ```
 

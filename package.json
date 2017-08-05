@@ -1,6 +1,6 @@
 {
   "name": "mqtt-wrapper",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "private": true,
   "description": "Polymer Element that wraps other Elements and links them to MQTT topics",
   "repository": {
