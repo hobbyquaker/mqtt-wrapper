@@ -1,6 +1,6 @@
 {
   "name": "mqtt-wrapper",
-  "version": "0.0.2",
+  "version": "1.0.0",
   "authors": [
     "Sebastian Raff <hq@ccu.io>"
   ],
@@ -21,7 +21,9 @@
     "test",
     "tests"
   ],
-  "dependencies": {},
+  "dependencies": {
+    "mqtt-connection": "hobbyquaker/mqtt-connection#*"
+  },
   "devDependencies": {
     "iron-component-page": "^3.0.1"
   }
