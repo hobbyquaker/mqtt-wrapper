@@ -5,7 +5,7 @@
     "Sebastian Raff <hq@ccu.io>"
   ],
   "description": "Polymer Element that wraps other Elements and links them to MQTT topics",
-  "main": "mqtt-connection.html",
+  "main": "mqtt-wrapper.html",
   "keywords": [
     "web-component",
     "web-components",
