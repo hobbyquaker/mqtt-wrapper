@@ -2,6 +2,7 @@
 <!--
 Polymer Element that wraps other Elements and links them to MQTT topics. Needs a `mqtt-connection` element.
 
+
 ## Installation
 
 `bower install hobbyquaker/mqtt-wrapper`
@@ -44,6 +45,18 @@ topics to switch a Hue lamp on and off:
         pub='[{"event":"change","topic":"hue/set/lights/Hobbyraum/on","attribute":"checked"}]'>
 
     <paper-toggle-button></paper-toggle-button>
+
+</mqtt-wrapper>
+```
+
+Wrapping a paper-slider and linking it to hue2mqtt.js topics to control a Hue lamps brightness. Will disable if the
+lamp is off:
+```html
+<mqtt-wrapper
+        sub='[{"topic":"hue/status/lights/Hobbyraum/bri","attribute":"value","json":"val","disable":"dragging"},{"topic":"hue/status/lights/Hobbyraum/on","attribute":"disabled","json":"val","type":"boolean","negate":true}]'
+        pub='[{"event":"change","topic":"hue/set/lights/Hobbyraum/bri","attribute":"value"},{"event":"immediate-value-change","topic":"hue/set/lights/Hobbyraum/bri","attribute":"immediateValue"}]'>
+
+    <paper-slider max="254"></paper-slider>
 
 </mqtt-wrapper>
 ```
@@ -107,6 +120,9 @@ topics to switch a Hue lamp on and off:
                      * * __payload__: String
                      *
                      *   A fixed payload that should be published (either use attribute _or_ payload).
+                     * * __negate__: Boolean
+                     *
+                     *   Negate the payload. Useful e.g. to set a disabled attribute when the payload is false.
                      *
                      * @type {Array<PublishConfig>}
                      */
@@ -135,28 +151,14 @@ topics to switch a Hue lamp on and off:
                 super.connectedCallback();
             }
 
-            __noDisableChange() {
-                if (!this.noDisable) {
-                    this.__connectedChangeHandler = event => {
-                        if (event.detail.value) {
-                            this.__child.removeAttribute('disabled')
-                        } else {
-                            this.__child.setAttribute('disabled', true);
-                        }
-                    }
-                    this.__mqtt.addEventListener('connected-changed', this.__connectedChangeHandler);
-                } else {
-                    if (this.__connectedChangeHandler) {
-                        this.__mqtt.removeEventListener('connected-change', this.__connectedChangeHandler);
-                    }
-                }
-            }
-
-            __pubChange() {
+            __removeEventHandlers() {
                 this.__eventHandlers.forEach(eh => {
                     this.__child.removeEventListener(eh.event, eh.handler);
                 });
                 this.__eventHandlers = [];
+            }
+
+            __addEventHandlers() {
                 if (this.pub && this.pub.length > 0) {
                     this.pub.forEach(conf => {
                         const handler = () => {
@@ -170,13 +172,17 @@ topics to switch a Hue lamp on and off:
                         this.__child.addEventListener(conf.event, handler);
                     });
                 }
+
             }
 
-            __subChange() {
+            __removeSubscriptions() {
                 this.__subscriptions.forEach(sid => {
                     this.__mqtt.unsubscribe(sid);
                 });
                 this.__subscriptions = [];
+            }
+
+            __addSubscriptions() {
                 if (this.sub && this.sub.length > 0) {
                     this.sub.forEach(conf => {
                         this.__subscriptions.push(this.__mqtt.subscribe(conf.topic, payload => {
@@ -195,7 +201,6 @@ topics to switch a Hue lamp on and off:
                             if (conf.negate) {
                                 payload = !payload;
                             }
-
                             if (typeof conf.attribute !== 'undefined') {
                                 if (conf.type === 'boolean' && !payload) {
                                     this.__child.removeAttribute(conf.attribute);
@@ -209,6 +214,45 @@ topics to switch a Hue lamp on and off:
                             }
                         }));
                     });
+                }
+            }
+
+
+            /**
+             * Call this method when the wrapped element has changed.
+             */
+            refresh() {
+                this.__removeEventHandlers();
+                this.__removeSubscriptions();
+                this.__child = this.querySelector('*:first-child');
+                this.__addEventHandlers();
+                this.__addSubscriptions();
+            }
+
+            __subChange() {
+                this.__removeSubscriptions();
+                this.__addSubscriptions();
+            }
+
+            __pubChange() {
+                this.__removeEventHandlers();
+                this.__addEventHandlers();
+            }
+
+            __noDisableChange() {
+                if (!this.noDisable) {
+                    this.__connectedChangeHandler = event => {
+                        if (event.detail.value) {
+                            this.__child.removeAttribute('disabled')
+                        } else {
+                            this.__child.setAttribute('disabled', true);
+                        }
+                    };
+                    this.__mqtt.addEventListener('connected-changed', this.__connectedChangeHandler);
+                } else {
+                    if (this.__connectedChangeHandler) {
+                        this.__mqtt.removeEventListener('connected-change', this.__connectedChangeHandler);
+                    }
                 }
             }
         }
