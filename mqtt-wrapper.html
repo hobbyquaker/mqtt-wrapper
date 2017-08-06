@@ -7,55 +7,13 @@
             static get is() { return 'mqtt-wrapper'; }
             static get properties() {
                 return {
-                    /**
-                     * Array defining mqtt topics to subscribe and what to do with incoming messages
-                     * #### SubscriptionConfig properties
-                     * * __topic__: String
-                     *
-                     *   MQTT topic to subscribe
-                     * * __attribute__: String
-                     *
-                     *   An attribute of the child element that should be set on incoming MQTT messages.
-                     * * __type__: String
-                     *
-                     *   Set to `boolean` if the attribute that should be set is of type Boolean.
-                     * * __json__: String
-                     *
-                     *   If you're using JSON payloads in your MQTT messages you can set a property of the JSON object
-                     *   here that should be used.
-                     * * __content__: String
-                     *
-                     *   Use `text` or `html` to set the MQTT message as innerHTML or innerText of the child element.
-                     *   Either use attribute _or_ content.
-                     * * __disable__: String
-                     *
-                     *   You can set an attribute name of the child element here that will prevent updates if true.
-                     *
-                     * @type {Array<SubscriptionConfig>}
-                     */
+
                     sub: {
                         type: Array,
                         observer: '__subChange'
                     },
 
-                    /**
-                     * Array defining events of the wrapped element that should trigger a mqtt publish and what to publish.
-                     * #### PublishConfig properties
-                     * * __event__: String
-                     *
-                     *   An event of the child element that should trigger a MQTT publish.
-                     * * __attribute__: String
-                     *
-                     *   An attribute of the child element that value should be used as publish payload.
-                     * * __payload__: String
-                     *
-                     *   A fixed payload that should be published (either use attribute _or_ payload).
-                     * * __negate__: Boolean
-                     *
-                     *   Negate the payload. Useful e.g. to set a disabled attribute when the payload is false.
-                     *
-                     * @type {Array<PublishConfig>}
-                     */
+
                     pub: {
                         type: Array,
                         observer: '__pubChange'
