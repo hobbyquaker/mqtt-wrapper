@@ -24,6 +24,10 @@ Polymer Element that wraps other Elements and links them to MQTT topics. Needs a
 <mqtt-connection host="mqtt-broker" port="8080"></mqtt-connection>
 ```
 
+## Documentation
+
+see https://www.webcomponents.org/element/hobbyquaker/mqtt-wrapper/elements/mqtt-wrapper
+
 
 ## Usage Examples
 
