@@ -80,6 +80,17 @@ when the lamp is off:
 </mqtt-wrapper>
 ```
 
+Wrapping google-map and google-map-marker elements and link them to [owntracks](http://owntracks.org/) MQTT messages:
+```
+<mqtt-wrapper selector="google-map-marker" sub='[{"topic":"owntracks/basti/iphone7","attribute":"latitude","json":"lat"},{"topic":"owntracks/basti/iphone7","attribute":"longitude","json":"lon"}]'>
+    <mqtt-wrapper sub='[{"topic":"owntracks/basti/iphone7","attribute":"latitude","json":"lat"},{"topic":"owntracks/basti/iphone7","attribute":"longitude","json":"lon"}]'>
+        <google-map api-key="1234" fit-to-markers>
+            <google-map-marker title="Basti"></google-map-marker>
+        </google-map>
+    </mqtt-wrapper>
+</mqtt-wrapper>
+```
+
 @customElement
 @element mqtt-wrapper
 @polymer
@@ -151,13 +162,21 @@ when the lamp is off:
                         type: Boolean,
                         value: false,
                         observer: '__noDisableChange'
+                    },
+
+                    /**
+                     *  The child element the wrapper should work on.
+                     */
+                    selector: {
+                        type: String,
+                        value: '*:first-child'
                     }
                 }
             }
 
             connectedCallback() {
                 this.__mqtt = document.querySelector('mqtt-connection');
-                this.__child = this.querySelector('*:first-child');
+                this.__child = this.querySelector(this.selector);
                 this.__eventHandlers = [];
                 this.__subscriptions = [];
 
@@ -236,7 +255,7 @@ when the lamp is off:
             refresh() {
                 this.__removeEventHandlers();
                 this.__removeSubscriptions();
-                this.__child = this.querySelector('*:first-child');
+                this.__child = this.querySelector(this.selector);
                 this.__addEventHandlers();
                 this.__addSubscriptions();
             }
