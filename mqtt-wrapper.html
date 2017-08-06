@@ -80,16 +80,19 @@ when the lamp is off:
 </mqtt-wrapper>
 ```
 
-Wrapping google-map and google-map-marker elements and link them to [owntracks](http://owntracks.org/) MQTT messages:
-```
-<mqtt-wrapper selector="google-map-marker" sub='[{"topic":"owntracks/basti/iphone7","attribute":"latitude","json":"lat"},{"topic":"owntracks/basti/iphone7","attribute":"longitude","json":"lon"}]'>
-    <mqtt-wrapper sub='[{"topic":"owntracks/basti/iphone7","attribute":"latitude","json":"lat"},{"topic":"owntracks/basti/iphone7","attribute":"longitude","json":"lon"}]'>
+Wrapping google-map and google-map-marker elements and link them to [owntracks](http://owntracks.org/) MQTT messages.
+We need 2 mqtt-wrapper elements here, because both the google-map and the google-map-marker need the longitude and
+latitude attributes, so the area with the marker is brought in view.
+```html
+<mqtt-wrapper selector="google-map" sub='[{"topic":"owntracks/basti/iphone7","attribute":"latitude","json":"lat"},{"topic":"owntracks/basti/iphone7","attribute":"longitude","json":"lon"}]'>
+    <mqtt-wrapper selector="google-map-marker" sub='[{"topic":"owntracks/basti/iphone7","attribute":"latitude","json":"lat"},{"topic":"owntracks/basti/iphone7","attribute":"longitude","json":"lon"}]'>
         <google-map api-key="1234" fit-to-markers>
             <google-map-marker title="Basti"></google-map-marker>
         </google-map>
     </mqtt-wrapper>
 </mqtt-wrapper>
 ```
+
 
 @customElement
 @element mqtt-wrapper
