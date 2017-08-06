@@ -19,9 +19,6 @@
                         observer: '__pubChange'
                     },
 
-                    /**
-                     *  Don't set attribute `disabled` on child element if MQTT connection is lost.
-                     */
                     noDisable: {
                         type: Boolean,
                         value: false,
@@ -105,10 +102,6 @@
                 }
             }
 
-
-            /**
-             * Call this method when the wrapped element has changed.
-             */
             refresh() {
                 this.__removeEventHandlers();
                 this.__removeSubscriptions();
