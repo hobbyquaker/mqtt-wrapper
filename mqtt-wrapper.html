@@ -60,18 +60,12 @@ lamp is off:
 
 </mqtt-wrapper>
 ```
+@customElement
 @element mqtt-wrapper
+@polymer
 -->
 <dom-module id="mqtt-wrapper">
     <script>
-        /**
-         * `mqtt-wrapper` wraps other Elements and links them to MQTT topics. Needs a `mqtt-connection` element.
-         * ## Usage
-         * In typical use, just put an element inside mqtt-wrapper.
-         *
-         * @customElement
-         * @polymer
-         */
         class MqttWrapper extends Polymer.Element {
             static get is() { return 'mqtt-wrapper'; }
             static get properties() {

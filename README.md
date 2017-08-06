@@ -53,6 +53,18 @@ topics to switch a Hue lamp on and off:
 </mqtt-wrapper>
 ```
 
+Wrapping a paper-slider and linking it to hue2mqtt.js topics to control a Hue lamps brightness. Will disable if the
+lamp is off:
+```html
+<mqtt-wrapper
+        sub='[{"topic":"hue/status/lights/Hobbyraum/bri","attribute":"value","json":"val","disable":"dragging"},{"topic":"hue/status/lights/Hobbyraum/on","attribute":"disabled","json":"val","type":"boolean","negate":true}]'
+        pub='[{"event":"change","topic":"hue/set/lights/Hobbyraum/bri","attribute":"value"},{"event":"immediate-value-change","topic":"hue/set/lights/Hobbyraum/bri","attribute":"immediateValue"}]'>
+
+    <paper-slider max="254"></paper-slider>
+
+</mqtt-wrapper>
+```
+
 ## License
 
 MIT (c) Sebastian Raff
