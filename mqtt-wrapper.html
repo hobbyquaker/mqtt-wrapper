@@ -1,36 +1,138 @@
 <link rel="import" href="../polymer/polymer-element.html">
+<!--
+Polymer Element that wraps other Elements and links them to MQTT topics. Needs a `mqtt-connection` element.
 
+
+## Installation
+
+`bower install hobbyquaker/mqtt-wrapper`
+
+
+## Imports and mqtt-connection
+
+```html
+<script src="bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+<link rel="import" href="bower_components/polymer/polymer.html">
+
+<link rel="import" href="bower_components/mqtt-connection/mqtt-connection.html">
+<link rel="import" href="bower_components/mqtt-wrapper/mqtt-wrapper.html">
+
+<mqtt-connection host="mqtt-broker" port="8080"></mqtt-connection>
+```
+
+
+## Usage Examples
+
+Inserts the last received message on the MQTT topic `test/info` as innerHTML to the wrapped div:
+```html
+<mqtt-wrapper sub='[{"topic":"test/info","content":"html"}]'>
+    <div></div>
+</mqtt-wrapper>
+```
+
+Send the payload `1` the MQTT topic `test/button` when the wrapped paper-button is clicked:
+```html
+<mqtt-wrapper pub='[{"event":"click","topic":"test/button","payload":"1"}]'>
+    <paper-button>Licht an</paper-button>
+</mqtt-wrapper>
+```
+
+Wrapping a paper-toggle-button and linking it to [hue2mqtt.js](https://github.com/hobbyquaker/hue2mqtt.js)
+topics to switch a Hue lamp on and off:
+```html
+<mqtt-wrapper
+        sub='[{"topic":"hue/status/lights/Hobbyraum/on","attribute":"checked","json":"val","type":"boolean"}]'
+        pub='[{"event":"change","topic":"hue/set/lights/Hobbyraum/on","attribute":"checked"}]'>
+
+    <paper-toggle-button></paper-toggle-button>
+
+</mqtt-wrapper>
+```
+
+Wrapping a paper-slider and linking it to hue2mqtt.js topics to control a Hue lamps brightness. Will disable if the
+lamp is off:
+```html
+<mqtt-wrapper
+        sub='[{"topic":"hue/status/lights/Hobbyraum/bri","attribute":"value","json":"val","disable":"dragging"},{"topic":"hue/status/lights/Hobbyraum/on","attribute":"disabled","json":"val","type":"boolean","negate":true}]'
+        pub='[{"event":"change","topic":"hue/set/lights/Hobbyraum/bri","attribute":"value"},{"event":"immediate-value-change","topic":"hue/set/lights/Hobbyraum/bri","attribute":"immediateValue"}]'>
+
+    <paper-slider max="254"></paper-slider>
+
+</mqtt-wrapper>
+```
+@element mqtt-wrapper
+-->
 <dom-module id="mqtt-wrapper">
     <script>
         /**
-         * # This is an h1 heading
-         * `<awesome-sauce>` injects a healthy dose of awesome into your page.
-         * ## This is an h2 heading
-         * In typical use, just slap some `<awesome-sauce>` at the top of your body:
-         * <body>
-         *   <awesome-sauce></awesome-sauce>
-         * Wham! It's all awesome now!
+         * `mqtt-wrapper` wraps other Elements and links them to MQTT topics. Needs a `mqtt-connection` element.
+         * ## Usage
+         * In typical use, just put an element inside mqtt-wrapper.
+         *
          * @customElement
          * @polymer
-         * @demo https://path/to/awesomeness/demo/
-         *
          */
         class MqttWrapper extends Polymer.Element {
             static get is() { return 'mqtt-wrapper'; }
             static get properties() {
                 return {
-
+                    /**
+                     * Array defining mqtt topics to subscribe and what to do with incoming messages
+                     * #### SubscriptionConfig properties
+                     * * __topic__: String
+                     *
+                     *   MQTT topic to subscribe
+                     * * __attribute__: String
+                     *
+                     *   An attribute of the child element that should be set on incoming MQTT messages.
+                     * * __type__: String
+                     *
+                     *   Set to `boolean` if the attribute that should be set is of type Boolean.
+                     * * __json__: String
+                     *
+                     *   If you're using JSON payloads in your MQTT messages you can set a property of the JSON object
+                     *   here that should be used.
+                     * * __content__: String
+                     *
+                     *   Use `text` or `html` to set the MQTT message as innerHTML or innerText of the child element.
+                     *   Either use attribute _or_ content.
+                     * * __disable__: String
+                     *
+                     *   You can set an attribute name of the child element here that will prevent updates if true.
+                     *
+                     * @type {Array<SubscriptionConfig>}
+                     */
                     sub: {
                         type: Array,
                         observer: '__subChange'
                     },
 
-
+                    /**
+                     * Array defining events of the wrapped element that should trigger a mqtt publish and what to publish.
+                     * #### PublishConfig properties
+                     * * __event__: String
+                     *
+                     *   An event of the child element that should trigger a MQTT publish.
+                     * * __attribute__: String
+                     *
+                     *   An attribute of the child element that value should be used as publish payload.
+                     * * __payload__: String
+                     *
+                     *   A fixed payload that should be published (either use attribute _or_ payload).
+                     * * __negate__: Boolean
+                     *
+                     *   Negate the payload. Useful e.g. to set a disabled attribute when the payload is false.
+                     *
+                     * @type {Array<PublishConfig>}
+                     */
                     pub: {
                         type: Array,
                         observer: '__pubChange'
                     },
 
+                    /**
+                     *  Don't set attribute `disabled` on child element if MQTT connection is lost.
+                     */
                     noDisable: {
                         type: Boolean,
                         value: false,
@@ -114,6 +216,10 @@
                 }
             }
 
+
+            /**
+             * Call this method when the wrapped element has changed.
+             */
             refresh() {
                 this.__removeEventHandlers();
                 this.__removeSubscriptions();
