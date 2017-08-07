@@ -49,14 +49,14 @@ Inserts the last received message on the MQTT topic `test/info` as innerHTML to 
 </mqtt-wrapper>
 ```
 
-Publish the payload `1` on the MQTT topic `test/button` when the wrapped paper-button is clicked:
+Wrap a paper-button and publish the payload `1` on the MQTT topic `test/button` when the button is clicked:
 ```html
 <mqtt-wrapper pub='[{"event":"click","topic":"test/button","payload":"1"}]'>
     <paper-button>Licht an</paper-button>
 </mqtt-wrapper>
 ```
 
-Publish the payload `true` when the button is pressed and the payload `false` when it's released:
+Wrap a paper-button and publish the payload `true` when the button is pressed and the payload `false` when it's released:
 ```html
 <mqtt-wrapper pub='[{"event":"down up","topic":"test/button","attribute":"pressed"}]'>
     <paper-button>Test</paper-button>
