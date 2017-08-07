@@ -201,16 +201,15 @@ latitude attributes, so the area with the marker is brought in view.
             disconnectedCallback() {
                 this.__removeSubscriptions();
                 this.__removeEventHandlers();
+
                 super.disconnectedCallback();
             }
 
             __removeEventHandlers() {
-                if (this.__eventHandlers.length > 0) {
-                    this.__eventHandlers.forEach(eh => {
-                        this.__child.removeEventListener(eh.event, eh.handler);
-                    });
-                    this.__eventHandlers = [];
-                }
+                this.__eventHandlers.forEach(eh => {
+                    this.__child.removeEventListener(eh.event, eh.handler);
+                });
+                this.__eventHandlers = [];
             }
 
             __addEventHandlers() {
@@ -232,12 +231,10 @@ latitude attributes, so the area with the marker is brought in view.
             }
 
             __removeSubscriptions() {
-                if (this.__subscriptions.length > 0) {
-                    this.__subscriptions.forEach(sid => {
-                        this.__mqtt.unsubscribe(sid);
-                    });
-                    this.__subscriptions = [];
-                }
+                this.__subscriptions.forEach(sid => {
+                    this.__mqtt.unsubscribe(sid);
+                });
+                this.__subscriptions = [];
             }
 
             __addSubscriptions() {
