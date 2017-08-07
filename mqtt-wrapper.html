@@ -205,7 +205,7 @@ latitude attributes, so the area with the marker is brought in view.
             }
 
             __removeEventHandlers() {
-                if (this.__eventsAdded) {
+                if (this.__eventHandlers.length > 0) {
                     this.__eventHandlers.forEach(eh => {
                         this.__child.removeEventListener(eh.event, eh.handler);
                     });
@@ -214,7 +214,6 @@ latitude attributes, so the area with the marker is brought in view.
             }
 
             __addEventHandlers() {
-                this.__eventsAdded = true;
                 if (this.pub && this.pub.length > 0) {
                     this.pub.forEach(conf => {
                         const handler = () => {
@@ -230,11 +229,10 @@ latitude attributes, so the area with the marker is brought in view.
                         });
                     });
                 }
-
             }
 
             __removeSubscriptions() {
-                if (this.__subscriptionsAdded) {
+                if (this.__subscriptions.length > 0) {
                     this.__subscriptions.forEach(sid => {
                         this.__mqtt.unsubscribe(sid);
                     });
@@ -243,7 +241,6 @@ latitude attributes, so the area with the marker is brought in view.
             }
 
             __addSubscriptions() {
-                this.__subscriptionsAdded = true;
                 if (this.sub && this.sub.length > 0) {
                     this.sub.forEach(conf => {
                         this.__subscriptions.push(this.__mqtt.subscribe(conf.topic, payload => {
