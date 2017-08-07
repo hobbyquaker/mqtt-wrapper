@@ -56,6 +56,13 @@ Publish the payload `1` on the MQTT topic `test/button` when the wrapped paper-b
 </mqtt-wrapper>
 ```
 
+Publish the payload `true` when the button is pressed and the payload `false` when it's released:
+```html
+<mqtt-wrapper pub='[{"event":"down up","topic":"test/button","attribute":"pressed"}]'>
+    <paper-button>Test</paper-button>
+</mqtt-wrapper>
+```
+
 Wrapping a paper-toggle-button and linking it to [hue2mqtt.js](https://github.com/hobbyquaker/hue2mqtt.js)
 topics to switch a Hue lamp on and off:
 ```html
@@ -127,6 +134,7 @@ latitude attributes, so the area with the marker is brought in view.
                      * * __disable__: String
                      *
                      *   You can set an attribute name of the child element here that will prevent updates if true.
+                     *   Useful e.g. to prevent slider updates while the user is dragging the slider (see examples).
                      *
                      * @type {Array<SubscriptionConfig>}
                      */
@@ -140,14 +148,18 @@ latitude attributes, so the area with the marker is brought in view.
                      * #### PublishConfig properties
                      * * __event__: String
                      *
-                     *   An event of the child element that should trigger a MQTT publish.
+                     *   An event of the child element that should trigger a MQTT publish. You can add multiple
+                     *   space-separated events at once.
                      * * __attribute__: String
                      *
                      *   An attribute of the child element that value should be used as publish payload.
                      * * __payload__: String
                      *
                      *   A fixed payload that should be published (either use attribute _or_ payload).
-                     * * __negate__: Boolean
+                     * * __retain__: Boolean (optional, default: `false`)
+                     *
+                     *   Whether the message should be published retained
+                     * * __negate__: Boolean (optional, default: `false`)
                      *
                      *   Negate the payload. Useful e.g. to set a disabled attribute when the payload is false.
                      *
@@ -198,9 +210,9 @@ latitude attributes, so the area with the marker is brought in view.
                     this.pub.forEach(conf => {
                         const handler = () => {
                             if (typeof conf.payload !== 'undefined') {
-                                this.__mqtt.publish(conf.topic, conf.payload);
+                                this.__mqtt.publish(conf.topic, conf.payload, {retain: conf.retain || false});
                             } else if (typeof conf.attribute !== 'undefined') {
-                                this.__mqtt.publish(conf.topic, this.__child[conf.attribute]);
+                                this.__mqtt.publish(conf.topic, this.__child[conf.attribute], {retain: conf.retain || false});
                             }
                         };
                         conf.event.split(' ').forEach(event => {
