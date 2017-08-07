@@ -198,14 +198,23 @@ latitude attributes, so the area with the marker is brought in view.
                 super.connectedCallback();
             }
 
+            disconnectedCallback() {
+                this.__removeSubscriptions();
+                this.__removeEventHandlers();
+                super.disconnectedCallback();
+            }
+
             __removeEventHandlers() {
-                this.__eventHandlers.forEach(eh => {
-                    this.__child.removeEventListener(eh.event, eh.handler);
-                });
-                this.__eventHandlers = [];
+                if (this.__eventsAdded) {
+                    this.__eventHandlers.forEach(eh => {
+                        this.__child.removeEventListener(eh.event, eh.handler);
+                    });
+                    this.__eventHandlers = [];
+                }
             }
 
             __addEventHandlers() {
+                this.__eventsAdded = true;
                 if (this.pub && this.pub.length > 0) {
                     this.pub.forEach(conf => {
                         const handler = () => {
@@ -225,13 +234,16 @@ latitude attributes, so the area with the marker is brought in view.
             }
 
             __removeSubscriptions() {
-                this.__subscriptions.forEach(sid => {
-                    this.__mqtt.unsubscribe(sid);
-                });
-                this.__subscriptions = [];
+                if (this.__subscriptionsAdded) {
+                    this.__subscriptions.forEach(sid => {
+                        this.__mqtt.unsubscribe(sid);
+                    });
+                    this.__subscriptions = [];
+                }
             }
 
             __addSubscriptions() {
+                this.__subscriptionsAdded = true;
                 if (this.sub && this.sub.length > 0) {
                     this.sub.forEach(conf => {
                         this.__subscriptions.push(this.__mqtt.subscribe(conf.topic, payload => {
