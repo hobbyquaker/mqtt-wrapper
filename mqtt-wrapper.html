@@ -203,8 +203,10 @@ latitude attributes, so the area with the marker is brought in view.
                                 this.__mqtt.publish(conf.topic, this.__child[conf.attribute]);
                             }
                         };
-                        this.__eventHandlers.push({event: conf.event, handler});
-                        this.__child.addEventListener(conf.event, handler);
+                        conf.event.split(' ').forEach(event => {
+                            this.__eventHandlers.push({event, handler});
+                            this.__child.addEventListener(event, handler);
+                        });
                     });
                 }
 
