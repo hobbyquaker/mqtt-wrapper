@@ -2,7 +2,7 @@
   "name": "mqtt-wrapper",
   "version": "1.4.0",
   "authors": [
-    "Sebastian Raff <hq@ccu.io>"
+    "Sebastian Raff <hobbyquaker@gmail.com>"
   ],
   "description": "Polymer Element that wraps other Elements and links them to MQTT topics",
   "main": "mqtt-wrapper.html",
