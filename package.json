@@ -16,6 +16,7 @@
   "license": "MIT",
   "homepage": "https://github.com/hobbyquaker/mqtt-wrapper",
   "dependencies": {
+    "@polymer/polymer": "^3.0.0",
     "mqtt-connection": "@hobbyquaker/mqtt-connection"
   },
   "devDependencies": {}
