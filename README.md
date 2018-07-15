@@ -4,12 +4,13 @@
 ![alt text][shield-polymer] 
 ![alt text][shield-license]
 
-Polymer Element that wraps other Elements and links them to MQTT topics. Needs a `mqtt-connection` element.
+Polymer Element that wraps other Elements and links them to MQTT topics. Needs a 
+[mqtt-connection](https://www.webcomponents.org/element/@hobbyquaker/mqtt-connection/elements/mqtt-connection) element.
 
 
 ## Documentation
 
-see https://www.webcomponents.org/element/hobbyquaker/mqtt-wrapper/elements/mqtt-wrapper
+see https://www.webcomponents.org/element/@hobbyquaker/mqtt-wrapper/elements/mqtt-wrapper
 
 ## License
 

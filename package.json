@@ -1,4 +1,6 @@
 {
+  "name": "@hobbyquaker/mqtt-wrapper",
+  "version": "3.0.5",
   "contributors": [
     {
       "name": "Sebastian Raff",
@@ -6,13 +8,14 @@
     }
   ],
   "dependencies": {
-    "@hobbyquaker/mqtt-connection": "^3.0.2",
+    "@hobbyquaker/mqtt-connection": "^3.0.6",
     "@polymer/polymer": "^3.0.0"
   },
   "description": "Polymer Element that wraps other Elements and links them to MQTT topics",
   "devDependencies": {},
   "flat": true,
   "homepage": "https://github.com/hobbyquaker/mqtt-wrapper",
+  "repository": "git+http://github.com/hobbyquaker/mqtt-wrapper",
   "keywords": [
     "web-component",
     "web-components",
@@ -20,7 +23,5 @@
     "mqtt"
   ],
   "license": "MIT",
-  "main": "mqtt-wrapper.js",
-  "name": "@hobbyquaker/mqtt-wrapper",
-  "version": "3.0.4"
+  "main": "mqtt-wrapper.js"
 }
