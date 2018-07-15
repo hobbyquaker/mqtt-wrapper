@@ -1,6 +1,6 @@
 {
   "name": "@hobbyquaker/mqtt-wrapper",
-  "version": "3.0.5",
+  "version": "3.0.6",
   "contributors": [
     {
       "name": "Sebastian Raff",
@@ -15,7 +15,7 @@
   "devDependencies": {},
   "flat": true,
   "homepage": "https://github.com/hobbyquaker/mqtt-wrapper",
-  "repository": "git+http://github.com/hobbyquaker/mqtt-wrapper",
+  "repository": "git+https://github.com/hobbyquaker/mqtt-wrapper",
   "keywords": [
     "web-component",
     "web-components",
