@@ -1,4 +1,4 @@
-import { Element } from '../../@polymer/polymer/polymer-element.js';
+import { PolymerElement } from '../../@polymer/polymer/polymer-element.js';
 /**
 @license
 Copyright 2017 Sebastian Raff <hq@ccu.io> https://github.com/hobbyquaker
@@ -103,7 +103,7 @@ latitude attributes, so the area with the marker is brought in view.
 @element mqtt-wrapper
 @polymer
 */
-class MqttWrapper extends Element {
+class MqttWrapper extends PolymerElement {
     static get is() { return 'mqtt-wrapper'; }
     static get properties() {
         return {
